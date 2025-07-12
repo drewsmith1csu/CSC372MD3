@@ -1,0 +1,60 @@
+import tkinter as tk
+from tkinter import Menu, scrolledtext
+from datetime import datetime
+import random
+import colorsys
+import sys
+
+# Generate a random hue of green (for a single execution)
+def generate_random_green():
+    hue = random.uniform(90/360, 150/360)  # Greenish hues (approx range)
+    r, g, b = colorsys.hsv_to_rgb(hue, 1, 1)
+    return '#%02x%02x%02x' % (int(r*255), int(g*255), int(b*255))
+
+# Create main application window
+app = tk.Tk()
+app.title("Menu Driven Interface")
+app.geometry("500x300")
+
+# Store the initial random green hue for this session
+initial_green = generate_random_green()
+
+# Create a frame to allow background color change
+frame = tk.Frame(app)
+frame.pack(fill='both', expand=True)
+
+# Create a scrolled text box
+text_box = scrolledtext.ScrolledText(frame, width=60, height=10)
+text_box.pack(pady=20)
+
+# Define menu commands
+def show_date_time():
+    now = datetime.now()
+    text_box.insert(tk.END, now.strftime("%Y-%m-%d %H:%M:%S") + "\n")
+
+def save_to_file():
+    content = text_box.get("1.0", tk.END)
+    with open("log.txt", "w") as f:
+        f.write(content.strip())
+
+def change_background():
+    frame.configure(bg=initial_green)
+
+def exit_program():
+    app.destroy()
+    sys.exit()
+
+# Create menu bar
+menu_bar = Menu(app)
+app.config(menu=menu_bar)
+
+# Add Menu items
+options_menu = Menu(menu_bar, tearoff=0)
+options_menu.add_command(label="Show Date/Time", command=show_date_time)
+options_menu.add_command(label="Save to File", command=save_to_file)
+options_menu.add_command(label=f"Random Green Background ({initial_green})", command=change_background)
+options_menu.add_command(label="Exit", command=exit_program)
+
+menu_bar.add_cascade(label="Menu", menu=options_menu)
+
+app.mainloop()
